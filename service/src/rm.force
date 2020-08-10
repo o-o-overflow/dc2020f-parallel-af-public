@@ -1,0 +1,21 @@
+extern unlink(filename);
+extern read_line(fd);
+
+# from shell
+extern arg_to_arg(arg);
+extern arg_to_stdout_fd(arg);
+
+defun main(arg)
+{
+  filename = arg_to_arg(arg);
+  stdout_fd = arg_to_stdout_fd(arg);
+
+  if (filename == 0)
+  {
+    OUTS_LITERAL("What file to rm?\n");
+    filename = read_line(0);
+  }
+  result = unlink(filename);
+  return result;
+}
+export main;

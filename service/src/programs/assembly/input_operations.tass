@@ -1,0 +1,52 @@
+filename = DUP 0x65742f706d742f
+# #define	O_WRONLY	0x0001
+# #define	O_CREAT		0x010
+# #define	O_TRUNC		0x020
+flags_1 = OR 0x0001 0x010
+flags = OR flags_1 0x020
+fd = OPN filename flags
+
+data = DUP 0x61
+
+res_1 = WRT fd data
+
+data_2 = ADD data res_1
+res_2 = WRT fd data_2
+
+data_3 = ADD data_2 res_2
+res_3 = WRT fd data_3
+
+data_4 = ADD data_3 res_3
+res_4 = WRT fd data_4
+
+res_5 = XOR res_4 res_4
+
+close_fd = ADD res_5 fd
+
+close_result = CLS close_fd
+OUTD close_result
+
+now_read_guard = XOR close_result close_result
+
+now_read_fn = ADD filename now_read_guard
+
+read_flags = DUP 0x0
+
+new_fd = OPN now_read_fn read_flags
+
+first = RED new_fd
+OUTD first
+
+second = RED new_fd
+OUTD second
+
+third = RED new_fd
+OUTD third
+
+fourth = RED new_fd
+OUTD fourth
+
+fifth = RED new_fd
+OUTD fifth
+
+

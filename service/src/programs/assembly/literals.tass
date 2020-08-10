@@ -1,0 +1,7 @@
+x = ADD 10 -100
+OUTD x
+
+zero = ADD x 90
+
+y = ADD zero 0x100
+OUTD y 

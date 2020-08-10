@@ -1,0 +1,11 @@
+input_byte = RED 0
+second_byte = RED 0
+third_byte = RED 0
+fourth_byte = RED 0
+fifth_byte = RED 0
+
+OUTD input_byte
+OUTD second_byte
+OUTD third_byte
+OUTD fourth_byte
+OUTD fifth_byte

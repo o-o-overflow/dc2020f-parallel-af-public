@@ -1,0 +1,74 @@
+# from os
+extern char_at(str, i);
+extern open_file(filename, flags);
+extern read_bytes(fd, num);
+extern read_line(fd);
+extern write_bytes(fd, bytes, size);
+extern strcmp(s1, s2);
+extern close_file(fd);
+extern sendfile(in_fd, out_fd);
+
+# from shell
+extern arg_to_arg(arg);
+extern arg_to_stdout_fd(arg);
+
+defun cat(filename, stdout_fd)
+{
+  fd = 0;
+  is_normal_file = strcmp(filename, "-") != 0;
+  if (is_normal_file)
+  {
+    fd = open_file(filename, 0);
+  }
+  else
+  {
+    fd = 0;
+  }
+
+  if (fd != 0)
+  {
+    bytes = fastcat(fd, stdout_fd);
+  }
+  else {
+    bytes = 0;
+    if (fd != -1)
+    {
+      bytes = read_bytes(fd, 1);
+      while (bytes != -1)
+      {
+        result = write_bytes(stdout_fd, bytes, 1);
+        result = result ^ result;
+        if (result == 0)
+        {
+          bytes = read_bytes(fd, 1);
+        }
+      }
+    }
+  }
+  if (is_normal_file == 0)
+  {
+    bytes = close_file(fd);
+  }
+  return 1 + bytes;
+}
+
+defun fastcat(input_fd, stdout_fd)
+{
+  result = sendfile(input_fd, stdout_fd);
+  return result;
+}
+
+defun main(arg)
+{
+  filename = arg_to_arg(arg);
+  stdout_fd = arg_to_stdout_fd(arg);
+
+  if (filename == 0)
+  {
+    OUTS_LITERAL("What file?\n");
+    filename = read_line(0);
+  }
+  result = cat(filename, stdout_fd);
+  return result;
+}
+export main;

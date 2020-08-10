@@ -1,0 +1,18 @@
+defun double(x) {
+  return x * x;
+}
+
+x = 2;
+i = 0;
+OUTD(x);
+while (i < 5)
+{
+  x = double(x);
+  OUTD(x);
+  if (i < 1000)
+  {
+	i = i + 1;
+  }
+}
+
+OUTD(x);

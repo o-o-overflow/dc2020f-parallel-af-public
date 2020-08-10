@@ -1,0 +1,31 @@
+# x = 0
+# OUTD x
+# while (x < 10) {
+#   x = x + 1
+#   OUTD x
+# }
+# OUTD x + 1
+
+x = ADD 0 0
+OUTD x
+new_tag, old_tag = NTG x
+x_init = CTG new_tag x
+
+old_tag_new = CTG new_tag old_tag
+
+x_mrg = MER x_init new_x
+
+test = LT x_mrg 10
+
+next_x, old_x = BRR x_mrg test
+loop_x = ITG next_x
+new_x = ADD loop_x 1
+OUTD loop_x
+
+reset_x = SIL old_x 0
+
+out_x = CTG old_tag_new reset_x
+OUTD out_x
+
+new_add_x = ADD out_x 1
+OUTD new_add_x

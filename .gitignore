@@ -1,0 +1,10 @@
+/tags
+/dcf-game-infrastructure
+public_bundle.tar.gz
+*.o
+service/src/*.bin
+__pycache__
+.DS_Store
+service/src/build/**
+service/src/*.tass
+*.dSYM

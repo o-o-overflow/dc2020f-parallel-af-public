@@ -1,0 +1,86 @@
+# The service name must contain only lowercase letters, numbers, and dashes. It MUST be the same as the repo name, sans "dc2020f-"
+service_name: "parallel-af"
+description: "Babu Frik found this terminal in some junk droid. Can you figure it out and find the flag?<br><br>
+Patches to manchester are limited to 100 bytes. Patches to os are unlimited.
+"
+tags:
+  - pwn
+  - reversing
+
+violates_flag_format: false # if this is not "true", the flag is verfied against the flag format
+
+# At some point we may start blocking all egress connections. Set this to True if your service needs them. DO NOT RELY ON THIS FOR BLOCKING THOUGH.
+allow_egress: False
+
+initial_flag: "OOO{this is a test flag}" # this is the flag of the service when it first launches. For jeopardy, this is "THE FLAG"
+flag_path: /service/flag # the location of the flag (for fresh flags). Leave blank for single-flag services (i.e., quals)
+
+# Type can be normal or king_of_the_hill
+type: normal
+
+isolation: private
+
+# This is the number of concurrent connections that a container should be able to handle.
+# This will be tested by the test script
+concurrent_connections: 1
+
+authors:
+  - adamd
+
+# This is the timeout that your check scripts will be run as.
+check_timeout: 120
+
+#
+# Directories below the next two are absolute in either the `service` or `interaction` docker container.
+#
+
+# These are the files that will be "public" to the teams via the scoreboard.
+# The paths are relative to the repository
+# They are published manually. IF YOU CHANGE THEM DURING THE GAME YELL!
+public_files:
+  - service/parallel-af.tar.gz
+
+# This is the file that may be patched (only 1 file is supported currently). They are relative to / in the challenge container!
+patchable_file: /parallel-af.tar.gz
+
+# The maximum difference in bytes between the original binary and the patch, if not supplied assumed to be 200 bytes
+max_patchable_bytes: 2147483647
+
+# Test scripts are heavily encouraged.
+# All scripts should exit 0 if nothing went wrong.
+# Scripts are automatically determined to be exploit scripts if they start with the word "exploit".
+# Exploit scripts must output the flag using "FLAG: <FLAG>" and exit with 0 if the flag was captured correctly. 
+# The paths are absolute in the `interaction` docker container.
+remote_interactions:
+  - /exploit_phase2.py
+  - /check.py
+
+# These local test scripts are run inside of a "local interaction" docker container that is derived from the service container.
+# They are for running more hardcore tests (i.e., static analysis, etc).
+# The paths are absolute in the `local-test` docker container.
+local_tests:
+  - /test/check_machine.sh
+  - /test/check_os.py
+
+
+
+# Services must have a unique game_port during the game
+# game_port defaults to container_port, which defaults to the docker EXPOSE (grepped)
+# Ideally, make EXPOSE unique and let chalmanager default to that
+
+game_port: 4242
+
+
+# It's strongly suggested to have a healthcheck regex
+# The infrastructure will periodically connect  and alert if it doesn't match anymore
+#
+# Example: healthcheck_tcp: awesome chall
+#          healthcheck_tcp_send: some intial command
+# Example: healthcheck_http: Author Login
+#
+# It's not actually read from the info.yml, but be ready to give it to Sean (/Jacopo/Yan/...)
+# It will go in inventory/group_vars/all (git@github.com:o-o-overflow/dc2020q-infra)
+healthcheck_tcp: Booting
+
+
+# TODO[quals]: other haproxy and kubernetes parameters (esp: cpu/ram resources, num instances)

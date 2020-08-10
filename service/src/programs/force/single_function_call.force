@@ -1,0 +1,17 @@
+defun foo(a, b) {
+  OUTD(a);
+  OUTD(b);
+  return a + b + 1;
+}
+
+y = foo(10, 100);
+OUTD(y);
+
+z = foo(20, y);
+OUTD(z);
+
+defun id(x) {
+  return x;
+}
+
+OUTD(id(1000));

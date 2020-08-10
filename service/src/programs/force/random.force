@@ -1,0 +1,7 @@
+first = RANDOM(10);
+second = RANDOM(0);
+
+if (first != second)
+{
+  OUTD(10);
+}

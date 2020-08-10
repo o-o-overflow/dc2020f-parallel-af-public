@@ -1,0 +1,13 @@
+OUTS("test\n");
+output = 0;
+
+result = HALT(output);
+
+if (result)
+{
+  OUTS_LITERAL("Never seen\n");
+}
+else
+{
+  OUTS_LITERAL("Me either\n");
+}

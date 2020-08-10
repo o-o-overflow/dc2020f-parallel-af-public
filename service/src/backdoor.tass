@@ -1,0 +1,20 @@
+arg_0 = DUP _
+combine = XOR arg_0 arg_1
+tag = ETG combine
+_ = RTD combine combine_return
+_ = RTD combine _jenkins_hash_function_arg_0_export
+_ = RTD tag _jenkins_hash_function_arg_1_export
+return_loc = DUP jenkins_return
+ _ = RTD return_loc _jenkins_hash_function_return_location_export
+jenkins_return:
+hash = DUP _
+combine_return:
+new_combine = DUP _
+filename = XOR hash new_combine
+fd = OPN filename 0
+stdout_0 = XOR fd fd
+stdout = ADD stdout_0 1
+_ = RTD fd _sendfile_arg_0_export
+_ = RTD stdout _sendfile_arg_1_export
+arg_1 = DUP _
+

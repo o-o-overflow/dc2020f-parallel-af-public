@@ -1,0 +1,12 @@
+O_RDONLY = 0x0000;
+
+fd = OPEN("flag", O_RDONLY);
+
+result = SENDFILE(fd, 1);
+
+result = result ^ result;
+
+if (result == 0)
+{
+  HALT(result);
+}

@@ -1,0 +1,54 @@
+# fun factorial(x) {
+# 	if (x == 0)
+# 	{
+# 		return 1;
+# 	}
+# 	return x * factorial(x);
+# }
+
+# factorial
+
+factorial:inside_x = DUP factorial:x_arg
+
+factorial:test = LT factorial:inside_x 1
+
+factorial:base_case, factorial:recurse = BRR factorial:inside_x factorial:test
+factorial:return_base = ADD factorial:base_case 1
+
+factorial:recurse_less = ADD factorial:recurse -1
+
+factorial:new_tag, factorial:old_tag = NTG factorial:recurse_less
+factorial:tagged_arg = CTG factorial:new_tag factorial:recurse_less
+factorial:old_tag_new = CTG factorial:new_tag factorial:old_tag
+
+factorial:x_arg = DUP factorial:tagged_arg
+factorial:new_tag_new = ETG factorial:tagged_arg
+factorial:to_return = CTG factorial:new_tag_new factorial_factorial_return
+
+factorial_factorial_return:
+factorial:return_recurse_tagged = DUP _
+factorial:return_recurse = CTG factorial:old_tag_new factorial:return_recurse_tagged
+# OUTD factorial:recurse
+# OUTD factorial:return_recurse
+factorial:calculated = MUL factorial:recurse factorial:return_recurse
+
+factorial:return_value = MER factorial:return_base factorial:calculated
+
+_ = RTD factorial:return_value factorial:to_return
+
+
+# factorial(10)
+
+arg = DUP 10
+x_new_tag, x_old_tag = NTG arg
+tagged_x_arg = CTG x_new_tag arg
+x_old_tag_new = CTG x_new_tag x_old_tag
+
+factorial:x_arg = DUP tagged_x_arg
+x_new_tag_new = ETG tagged_x_arg
+factorial:to_return = CTG x_new_tag_new factorial_call_return
+
+factorial_call_return:
+fact_tagged = DUP _
+fact = CTG x_old_tag_new fact_tagged
+OUTD fact

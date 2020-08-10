@@ -1,0 +1,12 @@
+
+defun main(arg)
+{
+  arg = arg ^ arg;
+  if (arg == 0)
+  {
+	OUTS_LITERAL("Hello world!\n");
+  }
+  return arg;
+}
+
+export main;

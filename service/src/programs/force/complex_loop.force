@@ -1,0 +1,9 @@
+x = 0;
+OUTD(x);
+while (x < 10) {
+  x = x + 1;
+  OUTD(x);
+  z = 10000;
+}
+OUTD(x + 1);
+OUTD(z + x);

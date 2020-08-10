@@ -1,0 +1,9 @@
+
+defun test(x)
+{
+  OUTS("test\n");
+  return 42;
+}
+export test;
+
+LOAD("second", 0);

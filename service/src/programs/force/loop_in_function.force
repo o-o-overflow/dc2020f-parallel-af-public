@@ -1,0 +1,18 @@
+defun sum(total)
+{
+  i = 0;
+  sum = 0;
+  done = 0;
+  while (done == 0)
+  {
+    sum = sum + i;
+	i = i + 1;
+	if (i == total)
+	{
+	  done = 1;
+	}
+  }
+  return sum;
+}
+
+OUTD(sum(10));

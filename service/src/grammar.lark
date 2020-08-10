@@ -1,0 +1,81 @@
+program: statements
+
+statements: statement*
+
+?statement: function_def
+         | conditional
+		 | while_loop
+		 | export_statement ";"
+		 | extern_statement ";"
+		 | return_statement ";"
+         | asm_statement ";"
+		 | expression ";"
+		 | assignment ";"
+
+function_def: "defun" function_name "(" [arg_list] ")" "{" statements "}"
+
+function_name: CNAME
+
+arg_list: var_name ("," var_name)*
+
+var_name: CNAME
+
+while_loop: "while" "(" expression ")" "{" statements "}"
+
+conditional: "if" "(" expression ")" "{" statements "}" [else_clause]
+
+else_clause: "else" "{" statements "}"
+
+?expression: function_call
+		  | binary_operation
+		  | var_name
+		  | STRING -> string
+		  | NUMBER -> number
+		  | "0x" hexnumber
+		  | "(" expression ")"
+
+lhs: var_name
+
+hexnumber: /[0-9a-zA-Z]+/
+
+expression_function_arg_list: expression ("," expression)*
+
+function_call: "OUTS_LITERAL" "(" STRING ")" -> outs_literal
+			 | function_name "(" [expression_function_arg_list] ")"
+
+binary_operation: expression op expression
+return_statement: "return" [expression]
+export_statement: "export" function_name
+extern_statement: "extern" function_name "(" [arg_list] ")"
+asm_statement: "asm(" STRING ")"
+
+assignment: lhs "=" expression
+
+op: "+" -> add
+  | "-" -> sub
+  | "*" -> mul
+  | "/" -> div
+  | "&" -> bit_and
+  | "^" -> bit_xor
+  | "|" -> bit_or
+  | "<<" -> bit_shift_left
+  | ">>" -> bit_shift_right
+  | "==" -> equals
+  | "!=" -> not_equals
+  | "<" -> less_than
+  | ">" -> greater_than
+  | "<=" -> less_than_or_equal
+  | ">=" -> greater_than_or_equal
+
+COMMENT: /#.*/
+       | /\/\/.*/
+
+%ignore COMMENT
+
+
+%import common.HEXDIGIT         -> HEXDIGIT
+%import common.SIGNED_NUMBER    -> NUMBER
+%import common.ESCAPED_STRING   -> STRING
+%import common.CNAME            -> CNAME
+%import common.WS
+%ignore WS

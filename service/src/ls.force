@@ -1,0 +1,8 @@
+extern list_directory(directory);
+
+defun main(arg)
+{
+	result = list_directory(".");
+	return result;
+}
+export main;

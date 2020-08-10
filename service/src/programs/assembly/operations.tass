@@ -1,0 +1,15 @@
+zero = MUL 10 0
+OUTD zero
+
+another_zero = MUL 0 10
+OUTD another_zero
+
+fifty = MUL 10 5
+OUTD fifty
+
+test_1 = GT 20 10
+test_0 = GT 10 20
+
+OUTD test_1
+OUTD test_0
+

@@ -1,0 +1,9 @@
+x = ADD 10 20
+y = ADD y 10 
+z = MER x y
+OUTD z
+
+a = ADD a 100
+b = ADD z 100
+c = MER a b
+OUTD c

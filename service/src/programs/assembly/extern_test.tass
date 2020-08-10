@@ -1,0 +1,9 @@
+extern os
+extern test
+
+y = DUP 0
+os = XOR y y
+test = DUP 10
+
+OUTD 20
+

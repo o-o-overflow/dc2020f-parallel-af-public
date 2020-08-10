@@ -1,0 +1,15 @@
+x = ADD 10 20
+y = SUB 40 10
+z = LT x y
+OUTD z
+a = ADD 100 50
+b = ADD a 500
+OUTD b
+c = ADD a 1242
+OUTD c
+d = NEG z
+OUTD d
+e = ADD a 10000
+f = ADD a 20000
+OUTD e
+OUTD f

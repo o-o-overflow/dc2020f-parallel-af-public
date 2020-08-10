@@ -1,0 +1,2 @@
+adamd = ADD 0x0a444d414441 0
+OUTS adamd

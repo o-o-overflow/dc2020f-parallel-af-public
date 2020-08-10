@@ -1,0 +1,18 @@
+O_WRONLY = 0x0001;
+O_CREAT = 0x010;
+O_TRUNC = 0x020;
+O_RDONLY = 0x0000;
+O_RDWR = 0x0002;
+
+
+filename = "/tmp/ad";
+fd = OPEN(filename, O_CREAT | O_RDWR | O_TRUNC);
+result = WRITE(fd, "h");
+offset = result ^ result;
+lseek_out = LSEEK(fd, offset);
+result = lseek_out ^ lseek_out;
+if (result == 0)
+{
+  result = READ(fd);
+  OUTS(result);
+}

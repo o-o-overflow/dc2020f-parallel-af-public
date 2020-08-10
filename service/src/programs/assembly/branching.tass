@@ -1,0 +1,17 @@
+# Essentially equivalent of:
+# x = 10 + 20
+# if (x < 100) {
+#   y = x + 100
+# }
+# else {
+#   y = x + 10000
+# }
+# PRINT y
+
+x = ADD 10 20
+test = LT x 0
+true_clause, false_clause = BRR x test
+foo = ADD true_clause 100
+bar = ADD false_clause 10000
+OUTD foo
+OUTD bar

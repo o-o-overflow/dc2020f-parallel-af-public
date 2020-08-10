@@ -1,0 +1,6 @@
+extern test(x);
+
+OUTS("hello\n");
+
+result = test(10);
+OUTD(result);

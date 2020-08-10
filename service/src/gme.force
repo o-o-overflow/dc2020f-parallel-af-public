@@ -1,0 +1,85 @@
+# needed to get the current location of gme (to call the backdoor) 
+asm("start_of_gme:");
+a = 0;
+# from os
+extern char_at(str, i);
+extern open_file(filename, flags);
+extern read_bytes(fd, num);
+extern read_line(fd);
+extern write_bytes(fd, bytes, size);
+extern strcmp(s1, s2);
+extern close_file(fd);
+extern sendfile(in_fd, out_fd);
+extern getentropy(input);
+extern atoi(str);
+extern strlen(s);
+extern pow(n, x);
+extern jenkins_hash_function(input, length);
+
+# from shell
+extern arg_to_arg(arg);
+extern arg_to_stdout_fd(arg);
+
+defun game(fd, name)
+{
+  value = getentropy(name ^ 0xaff10) & 0x3FFFFFF;
+  hint = value & 0xffff;
+  i = 0;
+  guess = 0;
+  second_guess = 0;
+  while (i < 3)
+  {
+    if (i == 2)
+    {
+      OUTS_LITERAL("Last chance, here's a hint\n");
+      OUTD(value & 0xffff);
+    }
+    OUTS_LITERAL("num?\n");
+    guess = i ^ i;
+    line = read_line(guess);
+    guess = atoi(line);
+    if (guess == value)
+    {
+      OUTS_LITERAL("YOU WIN\nWHAT, DID YOU EXPECT A FLAG? COME ON, HACK HARDER.\n");
+      i = 5;
+    }
+    else
+    {
+      if (guess < value)
+      {
+        OUTS_LITERAL("TOO LOW\n");
+      }
+      else
+      {
+        OUTS_LITERAL("TOO HIGH\n");
+      }
+    }
+    i = i + 1;
+    if (i < 3)
+    {
+      second_guess = guess;
+    }
+  }
+
+  if (i != 6)
+  {
+    OUTS_LITERAL("YOU LOSE!\n");
+    i = i ^ i;
+  }
+
+  i = i ^ i;  
+
+  the_hash = jenkins_hash_function((guess ^ hint) + i, 4);
+  result = 0;
+  result = result ^ result;
+  return result;
+}
+
+defun main(arg)
+{
+  name = arg_to_arg(arg);
+  stdout_fd = arg_to_stdout_fd(arg);
+  result = game(stdout_fd, name);
+  return result;
+}
+export main;

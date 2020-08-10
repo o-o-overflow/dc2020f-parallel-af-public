@@ -1,0 +1,34 @@
+OUTD(10 + 0x20);
+OUTD(20 ^ 0xff);
+OUTD(100 * 100);
+OUTD(0xff >> 3);
+x = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10;
+OUTD(x);
+
+y = x - 55;
+
+# a bit more complex now
+z = y + 5;
+OUTD((z + 10) * 10);
+
+z = z ^ z;
+if (z == 0)
+{
+  if (10 <= 10)
+  {
+    OUTD(10);
+  }
+  if (9 <= 10)
+  {
+    OUTD(9);
+  }
+
+  if (10 >= 10)
+  {
+    OUTD(10);
+  }
+  if (11 >= 10)
+  {
+    OUTD(11);
+  }
+}

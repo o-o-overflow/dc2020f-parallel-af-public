@@ -1,0 +1,3 @@
+HELLO WORLD
+This will be a shortcut to help enable output of long string literals.
+This syntax will only be available for constant strings in an OUTS function, which is eh

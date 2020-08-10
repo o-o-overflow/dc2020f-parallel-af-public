@@ -1,0 +1,7 @@
+x = 0;
+OUTD(x);
+while (x < 10) {
+  x = x + 1;
+  OUTD(x);
+}
+OUTD(x + 1);

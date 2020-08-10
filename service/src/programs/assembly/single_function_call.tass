@@ -1,0 +1,31 @@
+# fun foo(x) {
+#   OUTD x
+#   return x + 10
+# }
+# y = foo(10)
+# OUTD y
+# z = foo(100)
+# OUTD z
+
+# foo
+foo:inside_x = DUP foo:x_arg
+OUTD foo:inside_x
+foo:x_to_return = ADD foo:inside_x 10
+_ = RTD foo:x_to_return foo:return_value
+
+
+# foo(10)
+arg = DUP 10
+new_tag_old, old_tag_old = NTG arg
+new_tag_new = CTG new_tag_old new_tag_old
+old_tag_new = CTG new_tag_old old_tag_old
+
+tagged_x_arg = CTG new_tag_old arg
+foo:x_arg = DUP tagged_x_arg
+
+
+foo:return_value = CTG new_tag_new y
+y:
+y_ret_tagged = DUP _
+y_ret = CTG old_tag_new y_ret_tagged 
+OUTD y_ret

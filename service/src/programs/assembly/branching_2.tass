@@ -1,0 +1,33 @@
+# x = 10;
+# y = 100;
+# OUTD(x);
+# OUTD(y);
+# if (x < y) {
+#    x = 10000;
+# }
+# else {
+#    x = 0;
+# }
+# OUTD(x);
+
+initial_x = DUP 10
+initial_y = DUP 100
+OUTD initial_x
+OUTD initial_y
+
+test = LT initial_x initial_y
+
+true = DUP 1
+true_clause, false_clause = BRR true test
+
+the_true_arg = DUP 10000
+the_10000, _ = BRR the_true_arg true_clause
+x_true_statement = DUP the_10000
+
+the_false_arg = DUP 0
+the_0, _ = BRR the_false_arg false_clause
+x_false_statement = DUP the_0
+
+merged_x = MER x_true_statement x_false_statement
+
+OUTD merged_x

@@ -1,0 +1,51 @@
+# fun foo(x) {
+#   OUTD x
+#   return x + 10
+# }
+# y = foo(10)
+# OUTD y
+# z = foo(100)
+# OUTD z
+
+# foo
+foo:x_arg_loc:
+foo:inside_x = DUP foo:x_arg
+OUTD foo:inside_x
+foo:x_to_return = ADD foo:inside_x 10
+foo:return_location_loc:
+foo:return_location_internal = DUP foo:return_location
+_ = RTD foo:x_to_return foo:return_location_internal
+
+
+# foo(10)
+arg_10 = DUP 10
+x_new_tag, x_old_tag = NTG arg_10
+tagged_x_arg = CTG x_new_tag arg_10
+x_old_tag_new = CTG x_new_tag x_old_tag
+
+foo:x_arg = DUP tagged_x_arg
+x_new_tag = ETG tagged_x_arg
+foo:return_location = CTG x_new_tag y
+y:
+y_ret_tagged = DUP _
+y_ret = CTG x_old_tag_new y_ret_tagged 
+OUTD y_ret
+
+zeroed_out = SUB y_ret 20
+new_input = ADD zeroed_out 100
+
+# foo(100)
+z_new_tag, z_old_tag = NTG new_input
+tagged_z_input = CTG z_new_tag new_input
+z_old_tag_new = CTG z_new_tag z_old_tag
+
+foo:x_arg = DUP tagged_z_input
+z_new_tag = ETG tagged_z_input
+foo:return_location = CTG z_new_tag z 
+z:
+z_ret_tagged = DUP _
+z_ret = CTG z_old_tag_new z_ret_tagged 
+OUTD z_ret
+
+export foo:x_arg_loc
+export foo:return_location_loc

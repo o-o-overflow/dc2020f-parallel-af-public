@@ -1,0 +1,26 @@
+x = 10;
+y = 100;
+
+OUTD(x);
+OUTD(y);
+
+z = 42;
+
+if (x < y) {
+   if (x == 10)
+   {
+      x = 10000;
+   }
+   else {
+      OUTD(x);
+   }
+	
+}
+else {
+   x = 0;
+   x = x + z;
+}
+
+OUTD(x);
+OUTD(y);
+OUTD(z);

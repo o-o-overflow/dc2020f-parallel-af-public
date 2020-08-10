@@ -1,0 +1,116 @@
+extern load_file(filename, arg);
+extern open_file(filename, flags);
+extern read_bytes(fd, num);
+extern read_line(fd);
+extern strcmp(s1, s2);
+extern strlen(s);
+extern strstr(s1, s2);
+extern substring(str, start, end);
+extern upcase(str);
+extern char_at(str, i);
+
+# Shell <-> Userspace helpful functions
+defun arg_to_stdout_fd(arg)
+{
+  return char_at(arg, 7);
+}
+export arg_to_stdout_fd;
+
+defun arg_to_arg(arg)
+{
+  return arg & 0xFFFFFFFFFFFFFF;
+}
+export arg_to_arg;
+
+defun arg_and_fd_to_user_arg(arg, fd)
+{
+  arg = arg_to_arg(arg);
+  arg = arg ^ (fd << (8*7));
+  return arg;
+}
+
+
+# Shell Implementation
+defun prompt(x)
+{
+  OUTS_LITERAL("debug@R3-S1$ ");
+  return x;
+}
+
+defun output_help(x)
+{
+  x = x ^ x;
+  if (x == 0)
+  {
+    OUTS_LITERAL("Available shell commands:\nHELP\nQUIT\n\n");
+    x = 0;
+  }
+  return x;
+}
+
+defun main(arg)
+{
+  # helpful constants
+  O_WRONLY = 0x0001;
+  O_CREAT = 0x010;
+  O_TRUNC = 0x020;
+  O_RDONLY = 0x0000;
+  O_RDWR = 0x0002;
+
+  done = 0;
+  result = 0;
+  while (done == 0)
+  {
+    result = prompt(result);
+    result = result ^ result;
+    action = read_line(result);
+    if (strcmp(upcase(action),"HELP") == 0)
+    {
+      result = output_help(result);
+    }
+    else {
+      if ((strcmp(upcase(action), "QUIT") == 0) | (action == -1))
+      {
+        OUTS_LITERAL("Goodbye\n");
+        done = 1;
+      }
+      else {
+        # let's see about parsing the action to get an argument
+        arg = 0;
+        program = action;
+        idx = strstr(action, " ");
+        if (idx != -1)
+        {
+          # Extract the argument
+          arg = substring(action, idx+1, strlen(action));
+          program = substring(action, 0, idx);
+
+          # Enable this check to let the teams write to files, for phase 2.
+          # further check, if there's a > redirect, open up the fd and write to that fd
+          # pass it in as the most significant byte of the arg
+          idx = strstr(arg, ">");
+          if (idx != -1)
+          {
+            real_arg = substring(arg, 0, idx);
+            out_file = substring(arg, idx+1, strlen(arg));
+            stdout_fd = open_file(out_file, O_WRONLY | O_CREAT | O_TRUNC);
+            arg = arg_and_fd_to_user_arg(real_arg, stdout_fd);
+          }
+          else
+          {
+            arg = arg_and_fd_to_user_arg(arg, 1);
+          }
+        }
+        else
+        {
+          arg = arg_and_fd_to_user_arg(0, 1);
+        }
+        result = load_file(program, arg);
+      }
+    }
+  }
+
+  done = done ^ done;
+  return done;
+}
+export main;

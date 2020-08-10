@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec 2>/dev/null
+cd /service
+timeout -k1 240 stdbuf -i0 -o0 -e0 ./manchester -f ./os -t 45

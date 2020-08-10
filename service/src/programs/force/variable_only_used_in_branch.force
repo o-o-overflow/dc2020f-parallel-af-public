@@ -1,0 +1,7 @@
+test = 0;
+if (test == 0)
+{
+  foo = 10;
+  OUTD(foo);
+}
+OUTD(test);
